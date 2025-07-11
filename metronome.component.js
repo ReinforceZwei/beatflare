@@ -69,12 +69,13 @@ const noteValueLabels = {
   [DOTTED_QUARTER_NOTE]: 'Dotted Quarter Note'
 };
 
-const noteValueUnicode = {
-  [QUARTER_NOTE]: '𝅘𝅥',
-  [EIGHTH_NOTE]: '𝅘𝅥𝅮',
-  [SIXTEENTH_NOTE]: '𝅘𝅥𝅯',
-  [DOTTED_QUARTER_NOTE]: '𝅘𝅥.'
-}
+// Use SVG images instead of Unicode for better cross-platform support
+const noteValueSvgPaths = {
+  [QUARTER_NOTE]: 'assets/4th.svg',
+  [EIGHTH_NOTE]: 'assets/8th.svg',
+  [SIXTEENTH_NOTE]: 'assets/16th.svg',
+  [DOTTED_QUARTER_NOTE]: 'assets/dotted_4th.svg'
+};
 
 // Tempo multipliers for different note values
 const tempoMultipliers = {
@@ -237,19 +238,17 @@ export function MetronomeComponent() {
     }
   }
 
-  function handleNoteValueChange(e) {
-    setNoteValue(e.target.value);
-  }
+  // Note value is now set directly by the button onClick handlers
 
   function handleAccentChange(e) {
     setAccentEnabled(e.target.checked);
   }
 
-  // Render note value with Unicode symbol
+  // Render note value with SVG image
   function renderNoteValueOption(noteValueType) {
     return html`
       <div class="d-flex align-items-center">
-        <span class="me-2 note-symbol">${noteValueUnicode[noteValueType]}</span>
+        <img src="${noteValueSvgPaths[noteValueType]}" alt="${noteValueLabels[noteValueType]}" class="me-2 note-symbol" style="height: 20px;" />
         <span>${noteValueLabels[noteValueType]}</span>
       </div>
     `;
@@ -265,7 +264,7 @@ export function MetronomeComponent() {
       <div class="bpm-number mb-2">${displayTempo}</div>
       <div class="mb-3 text-secondary d-flex align-items-center justify-content-center">
         BPM 
-        <span class="ms-2 note-symbol">${noteValueUnicode[noteValue]}</span>
+        <img src="${noteValueSvgPaths[noteValue]}" alt="${noteValueLabels[noteValue]}" class="ms-2 note-symbol" style="height: 20px; filter: invert(1) brightness(100%);" />
       </div>
       
       <div class="dots mb-4">
@@ -341,17 +340,19 @@ export function MetronomeComponent() {
       </div>
 
       <div class="mb-4">
-        <select
-          class="form-select d-inline-block w-auto"
-          value=${noteValue}
-          onChange=${handleNoteValueChange}
-        >
+        <div class="btn-group w-100" style="max-width: 400px;">
           ${beats[timeSignature].map(config => html`
-            <option value=${config.noteValue}>
-              ${noteValueUnicode[config.noteValue]} ${noteValueLabels[config.noteValue]}
-            </option>
+            <button 
+              type="button" 
+              class="btn ${noteValue === config.noteValue ? 'btn-primary' : 'btn-outline-secondary'} d-flex flex-column align-items-center justify-content-center" 
+              style="flex: 1; min-width: 0;"
+              onClick=${() => setNoteValue(config.noteValue)}
+            >
+              <img src="${noteValueSvgPaths[config.noteValue]}" alt="${noteValueLabels[config.noteValue]}" style="height: 24px; margin-bottom: 4px; filter: invert(1) brightness(100%);" />
+              <small class="text-nowrap">${noteValueLabels[config.noteValue].split(' ')[0]}</small>
+            </button>
           `)}
-        </select>
+        </div>
       </div>
 
       <div class="mt-5 text-secondary">

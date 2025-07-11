@@ -99,8 +99,9 @@ export function TapBPMComponent() {
       <button
         ref=${tapBtnRef}
         class="btn btn-primary tap-btn mb-3${tapEffect ? ' tap-effect' : ''}"
-        onClick=${onTap}
-        onTouchStart=${onTap}
+        onMouseDown=${(e) => {onTap(); e.preventDefault();}}
+        onTouchStart=${(e) => {onTap(); e.preventDefault();}}
+        onClick=${(e) => {e.preventDefault();}}
         style="user-select:none;"
       >
         Tap!
